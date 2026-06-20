@@ -93,7 +93,7 @@ export default async function HomePage() {
         {about.title && (
           <section className="py-16 md:py-20 bg-gray-50/80">
             <div className="container-custom">
-              <div className="max-w-4xl mx-auto">
+              <div className=" mx-auto">
                 <div className="text-center mb-10 md:mb-12">
                   <span className="text-blue-600 font-semibold text-xs uppercase tracking-widest">About Us</span>
                   <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mt-2">
@@ -348,7 +348,7 @@ export default async function HomePage() {
                 <div className="w-16 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto mt-4 rounded-full"></div>
               </div>
 
-              <div className="max-w-4xl mx-auto">
+              <div className=" mx-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
                   {contact.phone && (
                     <div className="text-center p-5 md:p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100/80">

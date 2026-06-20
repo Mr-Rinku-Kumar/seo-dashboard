@@ -100,7 +100,7 @@ export default function HeroPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className=" mx-auto space-y-6">
       <div className="flex items-center gap-3">
         <div className="p-2 bg-green-100 rounded-xl">
           <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
