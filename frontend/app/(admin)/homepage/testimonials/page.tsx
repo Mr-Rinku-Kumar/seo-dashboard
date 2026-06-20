@@ -7,6 +7,9 @@ import toast from 'react-hot-toast';
 import ImageUpload from '@/components/ImageUpload';
 import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline';
 
+// ✅ Add API URL constant
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 export default function TestimonialsPage() {
   const router = useRouter();
   const [testimonials, setTestimonials] = useState<any[]>([]);
@@ -32,7 +35,8 @@ export default function TestimonialsPage() {
 
   const fetchTestimonials = async (token: string) => {
     try {
-      const response = await fetch('http://localhost:5000/api/homepage/testimonials', {
+      // ✅ Use API_URL instead of hardcoded localhost
+      const response = await fetch(`${API_URL}/homepage/testimonials`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const data = await response.json();
@@ -58,8 +62,8 @@ export default function TestimonialsPage() {
     try {
       const token = localStorage.getItem('token');
       const url = editingId 
-        ? `http://localhost:5000/api/homepage/testimonials/${editingId}`
-        : 'http://localhost:5000/api/homepage/testimonials';
+        ? `${API_URL}/homepage/testimonials/${editingId}`
+        : `${API_URL}/homepage/testimonials`;
       
       const response = await fetch(url, {
         method: editingId ? 'PUT' : 'POST',
@@ -93,7 +97,7 @@ export default function TestimonialsPage() {
     if (!confirm('Are you sure you want to delete this testimonial?')) return;
     try {
       const token = localStorage.getItem('token');
-      await fetch(`http://localhost:5000/api/homepage/testimonials/${id}`, {
+      await fetch(`${API_URL}/homepage/testimonials/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });
@@ -106,7 +110,6 @@ export default function TestimonialsPage() {
 
   const handleEdit = (testimonial: any) => {
     setEditingId(testimonial._id);
-    // ✅ Ensure every field gets a string value
     setFormData({
       customerName: testimonial.customerName ?? '',
       review: testimonial.review ?? '',

@@ -7,6 +7,9 @@ import toast from 'react-hot-toast';
 import ImageUpload from '@/components/ImageUpload';
 import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline';
 
+// ✅ Add API URL constant
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 export default function OccasionsPage() {
   const router = useRouter();
   const [occasions, setOccasions] = useState<any[]>([]);
@@ -31,7 +34,8 @@ export default function OccasionsPage() {
 
   const fetchOccasions = async (token: string) => {
     try {
-      const response = await fetch('http://localhost:5000/api/homepage/occasions', {
+      // ✅ Use API_URL instead of hardcoded localhost
+      const response = await fetch(`${API_URL}/homepage/occasions`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const data = await response.json();
@@ -57,8 +61,8 @@ export default function OccasionsPage() {
     try {
       const token = localStorage.getItem('token');
       const url = editingId 
-        ? `http://localhost:5000/api/homepage/occasions/${editingId}`
-        : 'http://localhost:5000/api/homepage/occasions';
+        ? `${API_URL}/homepage/occasions/${editingId}`
+        : `${API_URL}/homepage/occasions`;
       
       const response = await fetch(url, {
         method: editingId ? 'PUT' : 'POST',
@@ -89,7 +93,7 @@ export default function OccasionsPage() {
     if (!confirm('Are you sure you want to delete this occasion?')) return;
     try {
       const token = localStorage.getItem('token');
-      await fetch(`http://localhost:5000/api/homepage/occasions/${id}`, {
+      await fetch(`${API_URL}/homepage/occasions/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });
@@ -102,7 +106,6 @@ export default function OccasionsPage() {
 
   const handleEdit = (occasion: any) => {
     setEditingId(occasion._id);
-    // ✅ Ensure every field gets a string value
     setFormData({
       title: occasion.title ?? '',
       description: occasion.description ?? '',

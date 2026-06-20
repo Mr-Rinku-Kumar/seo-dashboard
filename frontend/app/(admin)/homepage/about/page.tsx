@@ -6,6 +6,9 @@ import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import ImageUpload from '@/components/ImageUpload';
 
+// ✅ Add API URL constant
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 export default function AboutPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -27,12 +30,12 @@ export default function AboutPage() {
 
   const fetchAboutData = async (token: string) => {
     try {
-      const response = await fetch('http://localhost:5000/api/homepage/about', {
+      // ✅ Use API_URL instead of hardcoded localhost
+      const response = await fetch(`${API_URL}/homepage/about`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const data = await response.json();
       if (data.data) {
-        // ✅ Ensure every field gets a string value
         setFormData({
           title: data.data.title ?? '',
           description: data.data.description ?? '',
@@ -59,7 +62,8 @@ export default function AboutPage() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/homepage/about', {
+      // ✅ Use API_URL instead of hardcoded localhost
+      const response = await fetch(`${API_URL}/homepage/about`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

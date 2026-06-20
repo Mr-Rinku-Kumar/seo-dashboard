@@ -7,6 +7,9 @@ import { useAuth } from '@/hooks/useAuth';
 import toast from 'react-hot-toast';
 import { PencilIcon, TrashIcon, PlusIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 
+// ✅ Add API URL constant
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 interface User {
   _id: string;
   name: string;
@@ -80,7 +83,8 @@ export default function UsersPage() {
         return;
       }
 
-      const response = await fetch('http://localhost:5000/api/auth/users', {
+      // ✅ Use API_URL instead of hardcoded localhost
+      const response = await fetch(`${API_URL}/auth/users`, {
         headers: { 
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -147,8 +151,8 @@ export default function UsersPage() {
       }
 
       const url = editingUser 
-        ? `http://localhost:5000/api/auth/users/${editingUser._id}`
-        : 'http://localhost:5000/api/auth/register';
+        ? `${API_URL}/auth/users/${editingUser._id}`
+        : `${API_URL}/auth/register`;
       
       const method = editingUser ? 'PUT' : 'POST';
       const payload = editingUser 
@@ -192,7 +196,8 @@ export default function UsersPage() {
         return;
       }
 
-      await fetch(`http://localhost:5000/api/auth/users/${id}`, {
+      // ✅ Use API_URL instead of hardcoded localhost
+      await fetch(`${API_URL}/auth/users/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });
@@ -205,7 +210,6 @@ export default function UsersPage() {
 
   const handleEdit = (user: User) => {
     setEditingUser(user);
-    // ✅ Ensure every field gets a string value
     setFormData({
       name: user.name ?? '',
       email: user.email ?? '',

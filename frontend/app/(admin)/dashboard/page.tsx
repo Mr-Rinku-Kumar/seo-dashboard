@@ -15,6 +15,9 @@ import {
   HomeIcon,
 } from '@heroicons/react/24/outline';
 
+// ✅ Add API URL constant
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 export default function DashboardPage() {
   const { user, isAdmin, loading: authLoading, isBackendAvailable } = useAuth();
   const router = useRouter();
@@ -57,24 +60,25 @@ export default function DashboardPage() {
       const timeoutId = setTimeout(() => controller.abort(), 5000);
 
       try {
+        // ✅ Use API_URL instead of hardcoded localhost
         const [vehicles, occasions, testimonials, gallery, users] = await Promise.all([
-          fetch('http://localhost:5000/api/homepage/vehicles', {
+          fetch(`${API_URL}/homepage/vehicles`, {
             headers: { 'Authorization': `Bearer ${token}` },
             signal: controller.signal,
           }),
-          fetch('http://localhost:5000/api/homepage/occasions', {
+          fetch(`${API_URL}/homepage/occasions`, {
             headers: { 'Authorization': `Bearer ${token}` },
             signal: controller.signal,
           }),
-          fetch('http://localhost:5000/api/homepage/testimonials', {
+          fetch(`${API_URL}/homepage/testimonials`, {
             headers: { 'Authorization': `Bearer ${token}` },
             signal: controller.signal,
           }),
-          fetch('http://localhost:5000/api/homepage/gallery', {
+          fetch(`${API_URL}/homepage/gallery`, {
             headers: { 'Authorization': `Bearer ${token}` },
             signal: controller.signal,
           }),
-          isAdmin() ? fetch('http://localhost:5000/api/auth/users', {
+          isAdmin() ? fetch(`${API_URL}/auth/users`, {
             headers: { 'Authorization': `Bearer ${token}` },
             signal: controller.signal,
           }) : Promise.resolve({ json: () => ({ data: [] }) }),

@@ -6,6 +6,9 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import ImageUpload from '@/components/ImageUpload';
 
+// ✅ Add API URL constant
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 export default function HeroPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -29,12 +32,12 @@ export default function HeroPage() {
 
   const fetchHeroData = async (token: string) => {
     try {
-      const response = await fetch('http://localhost:5000/api/homepage/hero', {
+      // ✅ Use API_URL instead of hardcoded localhost
+      const response = await fetch(`${API_URL}/homepage/hero`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const data = await response.json();
       if (data.data) {
-        // ✅ Ensure EVERY field gets a string value, even if API returns undefined/null
         setFormData({
           mainHeading: data.data.mainHeading ?? '',
           subHeading: data.data.subHeading ?? '',
@@ -63,7 +66,8 @@ export default function HeroPage() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/homepage/hero', {
+      // ✅ Use API_URL instead of hardcoded localhost
+      const response = await fetch(`${API_URL}/homepage/hero`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

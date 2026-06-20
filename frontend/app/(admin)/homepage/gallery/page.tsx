@@ -7,6 +7,9 @@ import toast from 'react-hot-toast';
 import ImageUpload from '@/components/ImageUpload';
 import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline';
 
+// ✅ Add API URL constant
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 export default function GalleryPage() {
   const router = useRouter();
   const [gallery, setGallery] = useState<any[]>([]);
@@ -30,7 +33,8 @@ export default function GalleryPage() {
 
   const fetchGallery = async (token: string) => {
     try {
-      const response = await fetch('http://localhost:5000/api/homepage/gallery', {
+      // ✅ Use API_URL instead of hardcoded localhost
+      const response = await fetch(`${API_URL}/homepage/gallery`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const data = await response.json();
@@ -61,8 +65,8 @@ export default function GalleryPage() {
     try {
       const token = localStorage.getItem('token');
       const url = editingId 
-        ? `http://localhost:5000/api/homepage/gallery/${editingId}`
-        : 'http://localhost:5000/api/homepage/gallery';
+        ? `${API_URL}/homepage/gallery/${editingId}`
+        : `${API_URL}/homepage/gallery`;
       
       const response = await fetch(url, {
         method: editingId ? 'PUT' : 'POST',
@@ -93,7 +97,7 @@ export default function GalleryPage() {
     if (!confirm('Are you sure you want to delete this image?')) return;
     try {
       const token = localStorage.getItem('token');
-      await fetch(`http://localhost:5000/api/homepage/gallery/${id}`, {
+      await fetch(`${API_URL}/homepage/gallery/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });
@@ -107,8 +111,8 @@ export default function GalleryPage() {
   const handleEdit = (item: any) => {
     setEditingId(item._id);
     setFormData({
-      image: item.image,
-      altText: item.altText || '',
+      image: item.image ?? '',
+      altText: item.altText ?? '',
     });
     setShowForm(true);
   };
@@ -163,7 +167,7 @@ export default function GalleryPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <ImageUpload
               onImageUpload={handleImageUpload}
-              currentImage={formData.image}
+              currentImage={formData.image ?? ''}
               label="Gallery Image"
             />
 
@@ -172,7 +176,7 @@ export default function GalleryPage() {
               <input
                 type="text"
                 name="altText"
-                value={formData.altText}
+                value={formData.altText ?? ''}
                 onChange={handleChange}
                 className="block w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Describe the image for accessibility"

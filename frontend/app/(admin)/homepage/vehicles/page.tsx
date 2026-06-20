@@ -25,6 +25,9 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
+// ✅ Add API URL constant
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 interface Vehicle {
   _id: string;
   name: string;
@@ -161,7 +164,8 @@ export default function VehiclesPage() {
 
   const fetchVehicles = async (token: string) => {
     try {
-      const response = await fetch('http://localhost:5000/api/homepage/vehicles', {
+      // ✅ Use API_URL instead of hardcoded localhost
+      const response = await fetch(`${API_URL}/homepage/vehicles`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const data = await response.json();
@@ -192,8 +196,8 @@ export default function VehiclesPage() {
     try {
       const token = localStorage.getItem('token');
       const url = editingId 
-        ? `http://localhost:5000/api/homepage/vehicles/${editingId}`
-        : 'http://localhost:5000/api/homepage/vehicles';
+        ? `${API_URL}/homepage/vehicles/${editingId}`
+        : `${API_URL}/homepage/vehicles`;
       
       const response = await fetch(url, {
         method: editingId ? 'PUT' : 'POST',
@@ -227,7 +231,7 @@ export default function VehiclesPage() {
     if (!confirm('Are you sure you want to delete this vehicle?')) return;
     try {
       const token = localStorage.getItem('token');
-      await fetch(`http://localhost:5000/api/homepage/vehicles/${id}`, {
+      await fetch(`${API_URL}/homepage/vehicles/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });
@@ -267,7 +271,8 @@ export default function VehiclesPage() {
           const token = localStorage.getItem('token');
           const vehicleIds = newVehicles.map((v) => v._id);
           
-          const response = await fetch('http://localhost:5000/api/homepage/vehicles/reorder', {
+          // ✅ Use API_URL instead of hardcoded localhost
+          const response = await fetch(`${API_URL}/homepage/vehicles/reorder`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
