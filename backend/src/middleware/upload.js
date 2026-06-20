@@ -1,27 +1,29 @@
 // backend/src/middleware/upload.js
 const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 const path = require('path');
-const fs = require('fs');
 
-// Create upload directory if it doesn't exist
-const uploadDir = path.join(__dirname, '../../uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Configure storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    // Generate unique filename: timestamp-random.ext
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
+// ✅ Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// File filter - only allow images
+// ✅ Cloudinary Storage
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'seo-dashboard',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'],
+    public_id: (req, file) => {
+      return Date.now() + '-' + Math.round(Math.random() * 1E9);
+    },
+  },
+});
+
+// ✅ File filter
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|gif|webp|svg/;
   const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
@@ -30,19 +32,18 @@ const fileFilter = (req, file, cb) => {
   if (mimetype && extname) {
     return cb(null, true);
   } else {
-    cb(new Error('Only image files are allowed (jpeg, jpg, png, gif, webp, svg)'));
+    cb(new Error('Only image files are allowed'));
   }
 };
 
-// Create multer instance
+// ✅ Multer instance
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: parseInt(process.env.MAX_FILE_SIZE || '5242880'),
   },
   fileFilter: fileFilter,
 });
 
-// Export middleware
 exports.singleUpload = (fieldName) => upload.single(fieldName);
 exports.multipleUpload = (fieldName, maxCount) => upload.array(fieldName, maxCount || 10);
