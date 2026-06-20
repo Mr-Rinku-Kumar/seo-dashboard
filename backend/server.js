@@ -24,9 +24,31 @@ const uploadRoutes = require('./src/routes/uploadRoutes');
 
 const app = express();
 
-// ✅ FIX: Update CORS configuration
+// ✅ FIX: Updated CORS configuration for production
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'https://seo-dashboard-blush-one.vercel.app',
+  'https://seo-dashboard.vercel.app',
+  'https://seo-dashboard-*.vercel.app',
+];
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      // Allow any Vercel URL (for preview deployments)
+      if (origin.match(/https:\/\/.*\.vercel\.app/)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -35,7 +57,7 @@ app.use(cors({
 
 // Security middleware
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }, // ✅ Allow cross-origin images
+  crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
 
 app.use(compression());
@@ -52,7 +74,7 @@ app.use('/api', limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ FIX: Static files with proper CORS headers
+// Static files with proper CORS headers
 app.use('/uploads', (req, res, next) => {
   res.header('Cross-Origin-Resource-Policy', 'cross-origin');
   res.header('Access-Control-Allow-Origin', '*');
