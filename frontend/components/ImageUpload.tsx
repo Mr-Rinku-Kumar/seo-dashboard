@@ -4,6 +4,9 @@
 import { useState, useRef } from 'react';
 import toast from 'react-hot-toast';
 
+// ✅ Add API URL constant
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 interface ImageUploadProps {
   onImageUpload: (url: string) => void;
   onImageRemove?: () => void;
@@ -53,7 +56,8 @@ export default function ImageUpload({
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await fetch('http://localhost:5000/api/upload', {
+      // ✅ Use API_URL from environment variable
+      const response = await fetch(`${API_URL}/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -66,6 +70,7 @@ export default function ImageUpload({
       if (data.success) {
         toast.success('Image uploaded successfully!');
         onImageUpload(data.data.url);
+        setPreview(data.data.url);
       } else {
         toast.error(data.message || 'Upload failed');
         setPreview(currentImage || null);
@@ -137,7 +142,7 @@ export default function ImageUpload({
             type="button"
             onClick={handleButtonClick}
             disabled={uploading}
-            className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 transition-colors"
+            className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 transition-colors touch-target"
           >
             {uploading ? (
               <span className="flex items-center space-x-2">
